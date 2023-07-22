@@ -23,14 +23,16 @@ public class World : MonoBehaviour
     void Update()
     {
 
-
-        UpdateChunks_LoadAndUnload(m_ViewDistance, new Vector3(0, 0, 0));
+        
+        UpdateChunks_LoadAndUnload(m_ViewDistance, Camera.main.transform.position);
 
         UpdateChunks_Mesh();
     }
 
     public void UpdateChunks_LoadAndUnload(int viewDistance, Vector3 viewPos)
     {
+        Vector3 viewChunkPos = Chunk.ChunkPos(viewPos);
+
         // Load Chunks
         int n = viewDistance;
         for (int dx = -n; dx <= n; ++dx)
@@ -38,17 +40,16 @@ public class World : MonoBehaviour
             // for (int dy = -n; dy <= n; ++dy)
             for (int dz = -n; dz <= n; ++dz)
             {
-                ProvideChunk(new Vector3(dx * 16, 0, dz * 16) + viewPos);
+                ProvideChunk(new Vector3(dx * 16, 0, dz * 16) + viewChunkPos);
             }
         }
 
         // Unload Chunks
-        Vector3 viewChunkPos = Chunk.ChunkPos(viewPos);
         List<Chunk> unloadChunks = new List<Chunk>();
         foreach (Chunk chunk in m_Chunks.Values)
         {
             // Use Abs.
-            if (Vector3.Distance(chunk.Position() + new Vector3(8, 8, 8), viewPos) > viewDistance * 16 * 2)
+            if (Vector3.Distance(chunk.Position() + new Vector3(8, 8, 8), viewPos) > viewDistance * 30)
             {
                 unloadChunks.Add(chunk);
             }
@@ -87,14 +88,6 @@ public class World : MonoBehaviour
 
     public Chunk GetLoadedChunk(Vector3 chunkpos)
     {
-        //int f = ((int)chunkpos.x) % 16;
-        //int f1 = (int)chunkpos.y % 16;
-        //float f2 = chunkpos.z % 16;
-        //int f32 = (int)chunkpos.z % 16;
-        //bool va = chunkpos.x % 16 == 0 && chunkpos.y % 16 == 0 && chunkpos.z % 16 == 0;
-        //if (!va) {
-        //    throw new System.Exception();
-        //}
         Assert.IsTrue(chunkpos.x % 16 == 0 && chunkpos.y % 16 == 0 && chunkpos.z % 16 == 0);
 
         return m_Chunks.GetValueOrDefault(chunkpos);
@@ -119,7 +112,7 @@ public class World : MonoBehaviour
 
             ChunkGenerator.GenerateChunk(chunk);
 
-            chunk.UpdateMesh();
+            chunk.m_Dirty = true;
 
             return chunk;
         }

@@ -6,7 +6,7 @@ public class Eldaria
 {
 
 
-    [MenuItem("Eldaria/MyTool/Do It in C#")]
+    //[MenuItem("Eldaria/MyTool/Do It in C#")]
     static void DoIt()
     {
         EditorUtility.DisplayDialog("MyTool2", "Do It in C# !", "OK", "");
