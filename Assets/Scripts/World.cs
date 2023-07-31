@@ -37,24 +37,29 @@ public class World : MonoBehaviour
         int n = viewDistance;
         for (int dx = -n; dx <= n; ++dx)
         {
-            // for (int dy = -n; dy <= n; ++dy)
-            for (int dz = -n; dz <= n; ++dz)
-            {
-                ProvideChunk(new Vector3(dx * 16, 0, dz * 16) + viewChunkPos);
+            for (int dy = -n; dy <= n; ++dy) 
+            { 
+                for (int dz = -n; dz <= n; ++dz)
+                {
+                    ProvideChunk(new Vector3(dx * 16, dy * 16, dz * 16) + viewChunkPos);
+                }
             }
         }
 
         // Unload Chunks
-        List<Chunk> unloadChunks = new List<Chunk>();
+        int lim = viewDistance * 16;
+        List<Chunk> unloadchunks = new List<Chunk>();
         foreach (Chunk chunk in m_Chunks.Values)
         {
-            // Use Abs.
-            if (Vector3.Distance(chunk.Position() + new Vector3(8, 8, 8), viewPos) > viewDistance * 30)
+            Vector3 p = chunk.Position();
+            if (Mathf.Abs(p.x-viewChunkPos.x) > lim ||
+                Mathf.Abs(p.y-viewChunkPos.y) > lim || 
+                Mathf.Abs(p.z-viewChunkPos.z) > lim) //Vector3.Distance(chunk.Position() + new Vector3(8, 8, 8), viewPos) > viewDistance * 30)
             {
-                unloadChunks.Add(chunk);
+                unloadchunks.Add(chunk);
             }
         }
-        foreach (Chunk chunk in unloadChunks)
+        foreach (Chunk chunk in unloadchunks)
         {
             UnloadChunk(chunk);
         }
@@ -122,9 +127,11 @@ public class World : MonoBehaviour
     {
         Assert.IsTrue(chunk.m_World == this);
         chunk.m_World = null;
-        Debug.Log("Chunk Unloaded: " + chunk.Position());
+        Debug.Log("Unload Chunk: " + chunk.Position());
 
-        m_Chunks.Remove(chunk.Position());
-        Destroy(chunk);  // DestroyEntity
+        bool removed = m_Chunks.Remove(chunk.Position());
+        Destroy(chunk.gameObject);  // DestroyEntity
+
+        Assert.IsTrue(removed);
     }
 }
