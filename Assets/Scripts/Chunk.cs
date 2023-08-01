@@ -22,10 +22,6 @@ public class Chunk : MonoBehaviour
 
     }
 
-    private void OnDestroy()
-    {
-        Debug.Log("Chunk OnDestroy()");
-    }
 
     public void UpdateMesh()
     {
