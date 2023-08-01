@@ -29,6 +29,7 @@ public class World : MonoBehaviour
         UpdateChunks_Mesh();
     }
 
+    // 加载和卸载区块，最好做到可以放到多个线程同步执行
     public void UpdateChunks_LoadAndUnload(int viewDistance, Vector3 viewPos)
     {
         Vector3 viewChunkPos = Chunk.ChunkPos(viewPos);
