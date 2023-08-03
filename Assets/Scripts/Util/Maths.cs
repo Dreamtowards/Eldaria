@@ -31,6 +31,11 @@ public class Maths
         return new Vector2(arr[idx], arr[idx + 1]);
     }
 
+    public static Vector3 Floor(Vector3 v)
+    {
+        return new((int)v.x, (int)v.y, (int)v.z);
+    }
+
     // CollectionsUtil
     public static int[] Sequence(int n, int begin = 0)
     {

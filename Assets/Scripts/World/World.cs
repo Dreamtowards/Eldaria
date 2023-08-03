@@ -135,4 +135,31 @@ public class World : MonoBehaviour
 
         Assert.IsTrue(removed);
     }
+
+    public void OnDrawGizmos()
+    {
+        Vector3 viewerpos = Camera.main.transform.position;
+        Vector3 viewerChunkPos = Chunk.ChunkPos(viewerpos);
+
+        Gizmos.color = Color.white;
+        Gizmos.DrawWireCube(viewerChunkPos, Vector3.one * (m_ViewDistance * 2 + 1) * 16.0f);
+
+
+        //int n = 4;
+        //for (int rx = -n; rx <= n; ++rx)
+        //{
+        //    for (int ry = -n; ry <= n; ++ry)
+        //    {
+        //        for (int rz = -n; rz <= n; ++rz)
+        //        {
+        //            Vector3 dp = new(rx, ry, rz);
+        //            Vector3 p = Maths.Floor(viewerpos) + dp;
+
+        //            float val = (GetCell(p).Value + 1.0f) * 0.5f;
+        //            Gizmos.color = new(val,val,val, 1.0f);
+        //            Gizmos.DrawSphere(p, 0.1f);
+        //        }
+        //    }
+        //}
+    }
 }

@@ -25,9 +25,19 @@ public class Chunk : MonoBehaviour
 
     public void UpdateMesh()
     {
+        VertexData vts = new VertexData();
+
+        // Generate Mesh
+        ChunkMesher.GenerateMesh(this, vts);
+
         Mesh mesh = new Mesh();
 
-        ChunkMesher.GenerateChunkMesh(this, mesh);
+        vts.Export(mesh);
+        mesh.triangles = Maths.Sequence(vts.VertexCount());
+
+        //mesh.RecalculateNormals();
+
+        Debug.Log("Chunk " + Position() + " Mesh Generated, VertexCount: " + vts.VertexCount());
 
         GetComponent<MeshFilter>().mesh = mesh;
         GetComponent<MeshCollider>().sharedMesh = mesh;
