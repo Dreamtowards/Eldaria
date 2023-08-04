@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using Unity.Mathematics;
 
 public class ChunkGenerator
 {
@@ -15,7 +16,7 @@ public class ChunkGenerator
             {
                 for (int rz = 0; rz < 16; ++rz)
                 {
-                    Vector3 p = new Vector3(rx, ry, rz) + chunk.Position();
+                    float3 p = new float3(rx, ry, rz) + chunk.Position();
                     ref Cell cell = ref chunk.LocalCell(rx, ry, rz);
 
 

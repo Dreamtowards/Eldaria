@@ -1,19 +1,20 @@
 ﻿using System;
 using UnityEngine;
+using Unity.Mathematics;
 
 public struct Cell
 {
 
     public static Cell Nil = new Cell();
-    public static readonly Vector3 InvalidFP = new(Mathf.Infinity, 0, 0);
+    public static readonly float3 InvalidFP = new(Mathf.Infinity, 0, 0);
 
     // for SDF
     public float Value;
 
     public int MtlId;
 
-    public Vector3 FeaturePoint;
-    public Vector3 Normal;
+    public float3 FeaturePoint;
+    public float3 Normal;
 
     //public Cell()
     //{

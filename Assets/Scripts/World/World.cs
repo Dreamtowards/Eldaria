@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Assertions;
+using Unity.Mathematics;
 
 public class World : MonoBehaviour
 {
@@ -78,7 +79,7 @@ public class World : MonoBehaviour
         }
     }
 
-    public ref Cell GetCell(Vector3 cellpos)
+    public ref Cell GetCell(float3 cellpos)
     {
         Chunk chunk = GetLoadedChunk(Chunk.ChunkPos(cellpos));
 
@@ -92,14 +93,14 @@ public class World : MonoBehaviour
         return ref chunk.LocalCell(Chunk.LocalPos(cellpos));
     }
 
-    public Chunk GetLoadedChunk(Vector3 chunkpos)
+    public Chunk GetLoadedChunk(float3 chunkpos)
     {
         Assert.IsTrue(chunkpos.x % 16 == 0 && chunkpos.y % 16 == 0 && chunkpos.z % 16 == 0);
 
         return m_Chunks.GetValueOrDefault(chunkpos);
     }
 
-    public Chunk ProvideChunk(Vector3 chunkpos)
+    public Chunk ProvideChunk(float3 chunkpos)
     {
         Chunk chunk = GetLoadedChunk(chunkpos);
 
@@ -109,7 +110,7 @@ public class World : MonoBehaviour
         }
         else
         {
-            chunk = Instantiate(m_ChunkPrototype, chunkpos, Quaternion.identity);  // CreateEntity
+            chunk = Instantiate(m_ChunkPrototype, chunkpos, quaternion.identity);  // CreateEntity
             chunk.m_World = this;
             m_Chunks.Add(chunkpos, chunk);
             Debug.Log("New Chunk " + chunkpos);
@@ -138,8 +139,8 @@ public class World : MonoBehaviour
 
     public void OnDrawGizmos()
     {
-        Vector3 viewerpos = Camera.main.transform.position;
-        Vector3 viewerChunkPos = Chunk.ChunkPos(viewerpos);
+        float3 viewerpos = Camera.main.transform.position;
+        float3 viewerChunkPos = Chunk.ChunkPos(viewerpos);
 
         Gizmos.color = Color.white;
         Gizmos.DrawWireCube(viewerChunkPos, Vector3.one * (m_ViewDistance * 2 + 1) * 16.0f);

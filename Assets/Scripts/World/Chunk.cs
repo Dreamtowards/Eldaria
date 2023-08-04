@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Mathematics;
 
 public class Chunk : MonoBehaviour
 {
@@ -43,7 +44,7 @@ public class Chunk : MonoBehaviour
         GetComponent<MeshCollider>().sharedMesh = mesh;
     }
 
-    public Vector3 Position()
+    public float3 Position()
     {
         return transform.position;
     }
@@ -55,7 +56,7 @@ public class Chunk : MonoBehaviour
     {
         return ref m_Cells[rx, ry, rz];
     }
-    public ref Cell LocalCell(Vector3 rpos, bool worldwide = false)
+    public ref Cell LocalCell(float3 rpos, bool worldwide = false)
     {
         if (worldwide && !InBound(rpos))
         {
@@ -73,13 +74,13 @@ public class Chunk : MonoBehaviour
                rpos.y >= 0 && rpos.y < 16 &&
                rpos.z >= 0 && rpos.z < 16;
     }
-    public static Vector3 ChunkPos(Vector3 p)
+    public static float3 ChunkPos(Vector3 p)
     {
-        return new Vector3(Maths.Floor(p.x, 16), Maths.Floor(p.y, 16), Maths.Floor(p.z, 16));
+        return new float3(Maths.Floor(p.x, 16), Maths.Floor(p.y, 16), Maths.Floor(p.z, 16));
     }
-    public static Vector3 LocalPos(Vector3 p)
+    public static float3 LocalPos(Vector3 p)
     {
-        return new Vector3(Maths.Mod(p.x, 16), Maths.Mod(p.y, 16), Maths.Mod(p.z, 16));
+        return new float3(Maths.Mod(p.x, 16), Maths.Mod(p.y, 16), Maths.Mod(p.z, 16));
     }
 
 

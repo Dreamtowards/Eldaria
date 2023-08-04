@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Unity.Mathematics;
 
 public class ChunkMesher
 {
@@ -67,20 +68,20 @@ public class ChunkMesher
             0, 0,-1, 0, 0,-1, 0, 0,-1, 0, 0,-1, 0, 0,-1, 0, 0,-1,
             0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1
     };
-    static void PutCube(VertexData vdat, Vector3 rpos, Chunk chunk) 
+    static void PutCube(VertexData vdat, float3 rpos, Chunk chunk) 
     {
         for (int face_i = 0; face_i < 6; ++face_i)
         {
-            Vector3 face_dir = Maths.Vector3(CUBE_NORM, face_i * 18);   // 18: 3 scalar * 3 vertex * 2 triangle
+            float3 face_dir = Maths.vec3(CUBE_NORM, face_i * 18);   // 18: 3 scalar * 3 vertex * 2 triangle
 
             Cell neibCell = chunk.LocalCell(rpos + face_dir, true);
             if (!neibCell.IsSolid())  // !isOpaque
             {
                 for (int vert_i = 0; vert_i < 6; ++vert_i)
                 {
-                    vdat.AddVertex(Maths.Vector3(CUBE_POS, face_i * 18 + vert_i * 3) + rpos,
-                                   Maths.Vector2(CUBE_UV,  face_i * 12 + vert_i * 2),
-                                   Maths.Vector3(CUBE_NORM,face_i * 18 + vert_i * 3));
+                    vdat.AddVertex(Maths.vec3(CUBE_POS, face_i * 18 + vert_i * 3) + rpos,
+                                   Maths.vec2(CUBE_UV,  face_i * 12 + vert_i * 2),
+                                   Maths.vec3(CUBE_NORM,face_i * 18 + vert_i * 3));
                 }
             }
         }
@@ -124,12 +125,12 @@ public class ChunkMesher
             {5,7}, {1,3}, {4,6}, {0,2},  // Y
             {4,5}, {0,1}, {6,7}, {2,3}   // Z
     };
-    static Vector3[] AXES = {
+    static float3[] AXES = {
             new(1, 0, 0),
             new(0, 1, 0),
             new(0, 0, 1)
     };
-    static Vector3[,] ADJACENT = {
+    static float3[,] ADJACENT = {
             {new(0,0,0), new(0,-1,0), new(0,-1,-1), new(0,-1,-1), new(0,0,-1), new(0,0,0)},
             {new(0,0,0), new(0,0,-1), new(-1,0,-1), new(-1,0,-1), new(-1,0,0), new(0,0,0)},
             {new(0,0,0), new(-1,0,0), new(-1,-1,0), new(-1,-1,0), new(0,-1,0), new(0,0,0)}
@@ -144,7 +145,7 @@ public class ChunkMesher
             {
                 for (int rz = 0; rz < 16; ++rz)
                 {
-                    Vector3 rp = new Vector3(rx, ry, rz);
+                    float3 rp = new(rx, ry, rz);
                     ref Cell c0 = ref chunk.LocalCell(rx, ry, rz);
 
                     // for 3 axes edges, if sign-changed, connect adjacent 4 cells' vertices
@@ -157,7 +158,7 @@ public class ChunkMesher
                             for (int quadv_i = 0; quadv_i < 6; ++quadv_i)
                             {
                                 int winded_vi = c0.IsSolid() ? quadv_i : 5 - quadv_i;
-                                Vector3 quadp = rp + ADJACENT[axis_i, winded_vi];
+                                float3 quadp = rp + ADJACENT[axis_i, winded_vi];
 
                                 ref Cell c = ref chunk.LocalCell(quadp, true);
 
@@ -167,7 +168,7 @@ public class ChunkMesher
                                     c.Normal = SN_Grad(quadp, chunk);
                                 }
 
-                                Vector3 p = quadp + c.FeaturePoint;
+                                float3 p = quadp + c.FeaturePoint;
 
                                 // Select Material of 8 Corners. (Max Density Value)
                                 int MtlId = 1;
@@ -188,34 +189,34 @@ public class ChunkMesher
 
     // Evaluate Normal of a Cell FeaturePoint
     // via Approxiate Differental Gradient  
-    static Vector3 SN_Grad(Vector3 rp, Chunk chunk)
+    static Vector3 SN_Grad(float3 rp, Chunk chunk)
     {
         float E = 1.0f;  // epsilon
         float denom = 1.0f / (2.0f * E);
-        return Vector3.Normalize(denom * new Vector3(
-            chunk.LocalCell(rp + new Vector3(E,0,0), true).Value - chunk.LocalCell(rp - new Vector3(E,0,0), true).Value,
-            chunk.LocalCell(rp + new Vector3(0,E,0), true).Value - chunk.LocalCell(rp - new Vector3(0,E,0), true).Value,
-            chunk.LocalCell(rp + new Vector3(0,0,E), true).Value - chunk.LocalCell(rp - new Vector3(0,0,E), true).Value));
+        return Vector3.Normalize(denom * new float3(
+            chunk.LocalCell(rp + new float3(E,0,0), true).Value - chunk.LocalCell(rp - new float3(E,0,0), true).Value,
+            chunk.LocalCell(rp + new float3(0,E,0), true).Value - chunk.LocalCell(rp - new float3(0,E,0), true).Value,
+            chunk.LocalCell(rp + new float3(0,0,E), true).Value - chunk.LocalCell(rp - new float3(0,0,E), true).Value));
     }
 
     // Evaluate FeaturePoint
     // returns cell-local point.
-    static Vector3 SN_FeaturePoint(Vector3 rp, Chunk chunk)
+    static Vector3 SN_FeaturePoint(float3 rp, Chunk chunk)
     {
         int signchanges = 0;
-        Vector3 fp_sum = new Vector3(0,0,0);
+        float3 fp_sum = new(0,0,0);
 
         for (int edge_i = 0; edge_i < 12; ++edge_i)
         {
-            Vector3 v0 = VERT[EDGE[edge_i, 0]];
-            Vector3 v1 = VERT[EDGE[edge_i, 1]];
+            float3 v0 = VERT[EDGE[edge_i, 0]];
+            float3 v1 = VERT[EDGE[edge_i, 1]];
             ref Cell c0 = ref chunk.LocalCell(rp + v0, true);
             ref Cell c1 = ref chunk.LocalCell(rp + v1, true);
 
             if (SN_SignChanged(c0, c1))
             {
                 float t = Mathf.InverseLerp(c0.Value, c1.Value, 0);
-                Vector3 p = t * (v1-v0) + v0;
+                float3 p = t * (v1-v0) + v0;
 
                 fp_sum += p;
                 ++signchanges;

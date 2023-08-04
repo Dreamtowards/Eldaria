@@ -2,6 +2,7 @@
 
 
 using UnityEngine;
+using Unity.Mathematics;
 
 public class Maths
 {
@@ -22,16 +23,16 @@ public class Maths
 
     // VectorUtil
 
-    public static Vector3 Vector3(float[] arr, int idx)
+    public static float3 vec3(float[] arr, int idx)
     {
-        return new Vector3(arr[idx], arr[idx+1], arr[idx+2]);
+        return new(arr[idx], arr[idx+1], arr[idx+2]);
     }
-    public static Vector2 Vector2(float[] arr, int idx)
+    public static float2 vec2(float[] arr, int idx)
     {
-        return new Vector2(arr[idx], arr[idx + 1]);
+        return new(arr[idx], arr[idx + 1]);
     }
 
-    public static Vector3 Floor(Vector3 v)
+    public static float3 Floor(float3 v)
     {
         return new((int)v.x, (int)v.y, (int)v.z);
     }
