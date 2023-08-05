@@ -646,7 +646,7 @@ PlayerSettings:
   webGLMemoryGeometricGrowthCap: 96
   webGLPowerPreference: 2
   scriptingDefineSymbols:
-    Standalone: 
+    Standalone: __DIGGER__;__DIGGER_RUNTIME__
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
