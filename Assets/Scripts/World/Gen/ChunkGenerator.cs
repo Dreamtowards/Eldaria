@@ -1,4 +1,5 @@
 ﻿using System;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class ChunkGenerator
@@ -16,7 +17,7 @@ public class ChunkGenerator
             {
                 for (int rz = 0; rz < 16; ++rz)
                 {
-                    Vector3 p = new Vector3(rx, ry, rz) + chunk.Position();
+                    float3 p = new float3(rx, ry, rz) + chunk.Position();
                     ref Cell cell = ref chunk.LocalCell(rx, ry, rz);
 
                     float noise = fn.GetNoise(p.x/10f, p.y/10f, p.z/10f);
