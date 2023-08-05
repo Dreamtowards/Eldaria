@@ -1,6 +1,7 @@
 ﻿using System;
 using Unity.Mathematics;
 using UnityEngine;
+using Unity.Mathematics;
 
 public class ChunkGenerator
 {
@@ -9,7 +10,6 @@ public class ChunkGenerator
     {
         FastNoiseLite fn = new FastNoiseLite();
         fn.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
-        fn.SetFractalOctaves(4);
 
         for (int rx = 0; rx < 16; ++rx)
         {
@@ -20,11 +20,16 @@ public class ChunkGenerator
                     float3 p = new float3(rx, ry, rz) + chunk.Position();
                     ref Cell cell = ref chunk.LocalCell(rx, ry, rz);
 
-                    float noise = fn.GetNoise(p.x/10f, p.y/10f, p.z/10f);
-                    if (noise < -0.1f)//ry/16.0f < noise)
+
+                    float noise = Mathf.PerlinNoise(p.x/30.0f, p.z/30.0f) - p.y/20.0f;//fn.GetNoise(p.x/10f, p.y/10f, p.z/10f);
+                    //Debug.Log($"NoiseF: {noise}");
+
+                    if (noise >= 0)//ry/16.0f < noise)
                     {
-                        cell.BlockId = 10;
+                        cell.MtlId = 1;
                     }
+                    cell.Value = noise;
+
                 }
             }
         }

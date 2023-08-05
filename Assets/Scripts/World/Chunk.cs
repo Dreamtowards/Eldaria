@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+using Unity.Mathematics;
 
 public class Chunk : MonoBehaviour
 {
@@ -26,9 +27,19 @@ public class Chunk : MonoBehaviour
 
     public void UpdateMesh()
     {
+        VertexData vts = new VertexData();
+
+        // Generate Mesh
+        ChunkMesher.GenerateMesh(this, vts);
+
         Mesh mesh = new Mesh();
 
-        ChunkMesher.GenerateChunkMesh(this, mesh);
+        vts.Export(mesh);
+        mesh.triangles = Maths.Sequence(vts.VertexCount());
+
+        //mesh.RecalculateNormals();
+
+        Debug.Log("Chunk " + Position() + " Mesh Generated, VertexCount: " + vts.VertexCount());
 
         GetComponent<MeshFilter>().mesh = mesh;
         GetComponent<MeshCollider>().sharedMesh = mesh;
@@ -72,6 +83,14 @@ public class Chunk : MonoBehaviour
     {
         return new int3((int)Maths.Mod(p.x, 16), (int)Maths.Mod(p.y, 16), (int)Maths.Mod(p.z, 16));
     }
+    //public static float3 ChunkPos(Vector3 p)
+    //{
+    //    return new float3(Maths.Floor(p.x, 16), Maths.Floor(p.y, 16), Maths.Floor(p.z, 16));
+    //}
+    //public static float3 LocalPos(Vector3 p)
+    //{
+    //    return new float3(Maths.Mod(p.x, 16), Maths.Mod(p.y, 16), Maths.Mod(p.z, 16));
+    //}
 
 
 }
