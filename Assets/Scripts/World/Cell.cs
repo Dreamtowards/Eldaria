@@ -8,7 +8,8 @@ public struct Cell
     public static Cell Nil = new Cell();
     public static readonly float3 InvalidFP = new(Mathf.Infinity, 0, 0);
 
-    // for SDF
+    // SDF (signed distance field) value.
+    // Positives == Inside the volume, Negatives == Outside the volume
     public float Value;
 
     public int MtlId;
