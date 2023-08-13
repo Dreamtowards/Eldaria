@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
-using Unity.Mathematics;
 
 public class Chunk : MonoBehaviour
 {

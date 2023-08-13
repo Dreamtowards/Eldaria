@@ -114,21 +114,26 @@ namespace Ethertia
 }
 
 
+//[ExecuteInEditMode]
 public class World : MonoBehaviour
 {
-    private Dictionary<int3, Chunk> m_Chunks = new Dictionary<int3, Chunk>();
+    public Dictionary<int3, Chunk> m_Chunks = new Dictionary<int3, Chunk>();
+
+    public int m_NumChunksLoaded { get { return m_Chunks.Count; } }
 
     public Chunk m_ChunkPrototype;
 
+    [Range(0, 16)]
     public int m_ViewDistance = 2;
 
+    [Header("WorldInfo")]
     public float m_DayTime = 0;
     public ulong m_Seed = 0;
     public string m_WorldName = "Overworld";
 
     void Start()
     {
-       
+        Debug.Log("World Starts.");
     }
 
     void Update()
@@ -139,6 +144,59 @@ public class World : MonoBehaviour
 
         UpdateChunks_Mesh();
     }
+
+    void OnDestroy()
+    {
+        Debug.Log("Unload All Chunks.");
+        UnloadAllChunks();
+    }
+
+    void OnEnable()
+    {
+        Debug.Log("World Enable");
+    }
+
+    void OnDisable()
+    {
+        Debug.Log("World Disable");
+    }
+
+    void OnGUI()
+    {
+        GUI.Label(Rect.zero, "Chunks: "+m_Chunks.Count);
+
+        Handles.Label(Vector3.one, "Test Chunk");
+    }
+
+
+    public void OnDrawGizmos()
+    {
+        float3 viewerpos = Camera.main.transform.position;
+        float3 viewerChunkPos = Chunk.ChunkPos(viewerpos);
+
+        Gizmos.color = Color.white;
+        Gizmos.DrawWireCube(viewerChunkPos + 8.0f, Vector3.one * (m_ViewDistance * 2 + 1) * 16.0f);
+
+
+        //int n = 4;
+        //for (int rx = -n; rx <= n; ++rx)
+        //{
+        //    for (int ry = -n; ry <= n; ++ry)
+        //    {
+        //        for (int rz = -n; rz <= n; ++rz)
+        //        {
+        //            Vector3 dp = new(rx, ry, rz);
+        //            Vector3 p = Maths.Floor(viewerpos) + dp;
+
+        //            float val = (GetCell(p).Value + 1.0f) * 0.5f;
+        //            Gizmos.color = new(val,val,val, 1.0f);
+        //            Gizmos.DrawSphere(p, 0.1f);
+        //        }
+        //    }
+        //}
+    }
+
+
 
     // 加载和卸载区块，最好做到可以放到多个线程同步执行
     public void UpdateChunks_LoadAndUnload(int viewDistance, float3 viewPos)
@@ -220,7 +278,7 @@ public class World : MonoBehaviour
         }
         else
         {
-            chunk = Instantiate(m_ChunkPrototype, new float3(chunkpos), Quaternion.identity);  // CreateEntity
+            chunk = Instantiate(m_ChunkPrototype, new float3(chunkpos), Quaternion.identity, gameObject.transform);  // CreateEntity
             chunk.m_World = this;
             m_Chunks.Add(chunkpos, chunk);
             Debug.Log("New Chunk " + chunkpos);
@@ -247,30 +305,14 @@ public class World : MonoBehaviour
         Assert.IsTrue(removed);
     }
 
-    public void OnDrawGizmos()
+    public void UnloadAllChunks()
     {
-        float3 viewerpos = Camera.main.transform.position;
-        float3 viewerChunkPos = Chunk.ChunkPos(viewerpos);
-
-        Gizmos.color = Color.white;
-        Gizmos.DrawWireCube(viewerChunkPos, Vector3.one * (m_ViewDistance * 2 + 1) * 16.0f);
-
-
-        //int n = 4;
-        //for (int rx = -n; rx <= n; ++rx)
-        //{
-        //    for (int ry = -n; ry <= n; ++ry)
-        //    {
-        //        for (int rz = -n; rz <= n; ++rz)
-        //        {
-        //            Vector3 dp = new(rx, ry, rz);
-        //            Vector3 p = Maths.Floor(viewerpos) + dp;
-
-        //            float val = (GetCell(p).Value + 1.0f) * 0.5f;
-        //            Gizmos.color = new(val,val,val, 1.0f);
-        //            Gizmos.DrawSphere(p, 0.1f);
-        //        }
-        //    }
-        //}
+        List<Chunk> chunks = new List<Chunk>(m_Chunks.Values);
+        foreach (Chunk chunk in chunks)
+        {
+            UnloadChunk(chunk);
+        }
     }
+
+
 }
