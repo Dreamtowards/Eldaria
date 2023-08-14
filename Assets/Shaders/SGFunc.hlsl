@@ -62,12 +62,12 @@ void MtlBlend_float(
 	oAlbedo = 
 	TexTrip(TexDiff, PosTrip, MtlIds[i_MaxBary], BlendTrip, MtlTexCap, TexSampleState);
 					 
-	oNormal =	 
-	TexTrip(TexNorm, PosTrip, MtlIds[i_MaxBary], 1.0, MtlTexCap, TexSampleState) * 2.0 - 1.0;
+	oNormal = 
+	TexTrip(TexNorm, PosTrip, MtlIds[i_MaxBary], BlendTrip, MtlTexCap, TexSampleState);
 
 
 	oMetallic = 0;
-	oSmoothness = 0;
+	oSmoothness = 0.3;
 	oEmission = 0;
 	oAO = 0;
 }
