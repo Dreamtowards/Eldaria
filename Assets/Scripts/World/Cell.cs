@@ -30,5 +30,11 @@ public struct Cell
         return Value > 0;
     }
 
+    public void Invalidate()
+    {
+        Value = 0;
+        MtlId = 0;
+        FeaturePoint = Mathf.Infinity;
+    }
 
 }

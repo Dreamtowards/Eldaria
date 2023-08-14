@@ -12,37 +12,22 @@ Shader "Eldaria/VoxelTerrain"
     }
     SubShader
     {
-        //Tags { "LightMode" = "ForwardBase" }
-        Tags { "RenderType" = "Opaque" } 
+        //Pass
+        //{
+            //Tags { "LightMode" = "ForwardBase" }
+            //Tags { "RenderType" = "Opaque" } 
+            Tags { "LightMode" = "UniversalForward" }
+            Tags { "Queue" = "Transparent" }
 
-        CGPROGRAM
-        #pragma surface surf Lambert
             
-        //#include "UnityCG.cginc" 
+            //#include "UnityCG.cginc" 
 
-        //sampler2D _TexDiff;
-        //float _MtlTexScale;
-        //float _MtlTriplanarBlendPow; 
-
-        struct Input 
-        {
-            float4 color : COLOR;
-            //float3 worldPos; 
-            //float3 worldNorm;
-        };
+            //sampler2D _TexDiff;
+            //float _MtlTexScale;
+            //float _MtlTriplanarBlendPow; 
             
-        void surf(Input IN, inout SurfaceOutput o)
-        {
-            o.Albedo = 1; 
-            // o.Normal;
-            // o.Emission;
-            // o.Specular;
-            // o.Gloss;
-            // o.Alpha;
-        }
-
-        ENDCG
-
+        
+        //}
         //v2f vert(float4 in_pos : POSITION, float2 in_uv : TEXCOORD0, float3 in_norm : NORMAL)
         //{
         //    v2f o;
@@ -79,3 +64,29 @@ Shader "Eldaria/VoxelTerrain"
         //}
     }
 }
+
+
+
+
+// SurfaceShader
+            //CGPROGRAM
+            //#pragma surface surf Standard 
+
+            //struct Input 
+            //{
+            //    float4 color : COLOR; 
+            //    //float3 worldPos; 
+            //    //float3 worldNorm;
+            //};
+            
+            //void surf(Input IN, inout SurfaceOutputStandard o)
+            //{
+            //    o.Albedo = 0.6; 
+            //    // o.Normal;
+            //    // o.Emission;
+            //    // o.Specular;
+            //    // o.Gloss;
+            //    // o.Alpha;
+            //}
+
+            //ENDCG

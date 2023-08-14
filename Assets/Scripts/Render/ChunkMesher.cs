@@ -171,7 +171,18 @@ public class ChunkMesher
                                 float3 p = quadp + c.FeaturePoint;
 
                                 // Select Material of 8 Corners. (Max Density Value)
-                                int MtlId = 1;
+                                int MtlId = 0;
+                                float min_dist = float.PositiveInfinity;
+                                foreach (float3 vp in VERT)
+                                {
+                                    ref Cell vc = ref chunk.LocalCell(quadp + vp, true);
+                                    if (vc.MtlId != 0 && vc.Value > 0 && vc.Value < min_dist)
+                                    {
+                                        min_dist = vc.Value;
+                                        MtlId = vc.MtlId;
+                                    }
+                                }
+                                // ASSERT(MtlId);
 
                                 vts.AddVertex(p, new(MtlId, -1), -c.Normal);
                             }

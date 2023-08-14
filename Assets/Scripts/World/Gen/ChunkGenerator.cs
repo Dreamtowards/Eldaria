@@ -23,9 +23,9 @@ public class ChunkGenerator
                     float noise = Mathf.PerlinNoise(p.x/30.0f, p.z/30.0f) - p.y/20.0f;//fn.GetNoise(p.x/10f, p.y/10f, p.z/10f);
                     //Debug.Log($"NoiseF: {noise}");
 
-                    if (noise >= 0)//ry/16.0f < noise)
+                    if (noise > 0)//ry/16.0f < noise)
                     {
-                        cell.MtlId = 1;
+                        cell.MtlId = p.y > 4 ? 1 : 2;
                     }
                     cell.Value = noise;
 
