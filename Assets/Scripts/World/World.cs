@@ -255,6 +255,7 @@ public class World : MonoBehaviour
         {
             //Debug.LogWarning("Getting Cell at Non-Loaded Chunk");
             //throw new System.Exception();
+            Cell.Nil.Invalidate();
             return ref Cell.Nil;
         }
 

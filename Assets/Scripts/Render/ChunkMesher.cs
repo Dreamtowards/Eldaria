@@ -233,6 +233,10 @@ public class ChunkMesher
                 ++signchanges;
             }
         }
+        if (signchanges == 0)
+        {
+            Log.warn("ERR No SignChange");
+        }
         Assert.IsTrue(signchanges != 0, "Invalid FeaturePoint, No SignChange.");
         return fp_sum / signchanges;
     }

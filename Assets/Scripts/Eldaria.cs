@@ -1,14 +1,20 @@
 ﻿using System.Collections;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace Ethertia
+
+class EthertiaTools
 {
 
+    [MenuItem("Eldaria/Regenerate Material Texture Atlases")]
+    private static void RegenMtlTexAtlas()
+    {
+        Log.info($"CurrDir: {Directory.GetCurrentDirectory()}, {Application.absoluteURL}");
 
-    ////[MenuItem("Eldaria/MyTool/Do It in C#")]
-    //private void DoIt()
-    //{
-    //    //EditorUtility.DisplayDialog("MyTool2", "Do It in C# !", "OK", "");
-    //}
+        MaterialTextures.Load();
+
+        //EditorUtility.DisplayDialog("MyTool2", "Do It in C# !", "OK", "");
+    }
+
 }
