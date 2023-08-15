@@ -3,7 +3,7 @@
 using System;
 using System.Diagnostics;
 
-class BenchmarkTimer
+class BenchmarkTimer : IDisposable
 {
     private Stopwatch m_Stopwatch = new Stopwatch();
 
@@ -11,7 +11,7 @@ class BenchmarkTimer
 
     private string m_EndMsg;
 
-    public BenchmarkTimer(string msg = "in {}.\n")
+    public BenchmarkTimer(string msg = "in {0}ms.\n")
     {
         m_EndMsg = msg;
 
@@ -26,6 +26,11 @@ class BenchmarkTimer
         }
     }
 
+    public void Dispose()
+    {
+        Stop();
+    }
+
     public TimeSpan Stop()
     {
         m_Stopped = true;
@@ -36,7 +41,7 @@ class BenchmarkTimer
 
         if (m_EndMsg != null)
         {
-            Console.WriteLine(m_EndMsg, elapsed);
+            Log.info(string.Format(m_EndMsg, elapsed.TotalMilliseconds));
         }
 
         return elapsed;

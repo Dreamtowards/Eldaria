@@ -36,7 +36,7 @@ class Material
     public static Material ROCK_MOSSY = new Material("rock_mossy");
     public static Material ROCK_SMOOTH = new Material("rock_smooth");
     public static Material ROCK_VOLCANIC = new Material("rock_volcanic");
-    public static Material CONCERTE = new Material("concerte");
+    public static Material CONCRETE = new Material("concrete");
     public static Material DEEPSLATE = new Material("deepslate");
     public static Material BRICK_ROOF = new Material("brick_roof");
 

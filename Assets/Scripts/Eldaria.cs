@@ -10,7 +10,7 @@ class EthertiaTools
     [MenuItem("Eldaria/Regenerate Material Texture Atlases")]
     private static void RegenMtlTexAtlas()
     {
-        Log.info($"CurrDir: {Directory.GetCurrentDirectory()}, {Application.absoluteURL}");
+        Log.info($"CurrDir: {Directory.GetCurrentDirectory()}, {Application.dataPath}");
 
         MaterialTextures.Load();
 
