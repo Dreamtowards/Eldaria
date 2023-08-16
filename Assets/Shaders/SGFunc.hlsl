@@ -65,7 +65,7 @@ void MtlBlend_float(
     float3 BlendTrip = pow(abs(WorldNorm), 6.0);
     BlendTrip /= dot(BlendTrip, 1.0);  // make sure the weights sum up to 1 (divide by sum of x+y+z)
 
-	MtlIds += MtlBlendPowTriplanar;
+	MtlIds += MtlTexIdOffset;
 
 	float3 PosTrip = WorldPos / MtlTexScale;
 
