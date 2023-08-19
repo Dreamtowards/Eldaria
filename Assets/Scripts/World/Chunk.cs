@@ -10,11 +10,12 @@ public class Chunk : MonoBehaviour
     // A reference to the World
     public World m_World;
 
+    public float3 chunkpos;
+
     public bool m_Dirty = true;
 
     void Start()
     {
-
     }
 
 
@@ -24,29 +25,34 @@ public class Chunk : MonoBehaviour
     }
 
 
-    public void UpdateMesh()
+    //public void UpdateMesh()
+    //{
+    //    VertexData vtx = new VertexData();
+
+    //    UnityEngine.Profiling.Profiler.BeginSample("[Et] MeshGen");
+
+    //    // Generate Mesh
+    //    ChunkMesher.GenerateMesh(this, vtx);
+
+    //    Mesh mesh = new Mesh();
+
+    //    vtx.Export(mesh);
+    //    mesh.triangles = Maths.Sequence(vtx.VertexCount());
+
+    //    //mesh.RecalculateNormals();
+
+    //    UnityEngine.Profiling.Profiler.EndSample();
+
+    //    Debug.Log("Chunk " + chunkpos + " Mesh Generated, VertexCount: " + vtx.VertexCount());
+
+    //    UpdateMesh(mesh);
+    //}
+
+    public void UpdateMesh(Mesh mesh)
     {
-        VertexData vts = new VertexData();
-
-        // Generate Mesh
-        ChunkMesher.GenerateMesh(this, vts);
-
-        Mesh mesh = new Mesh();
-
-        vts.Export(mesh);
-        mesh.triangles = Maths.Sequence(vts.VertexCount());
-
-        //mesh.RecalculateNormals();
-
-        Debug.Log("Chunk " + Position() + " Mesh Generated, VertexCount: " + vts.VertexCount());
 
         GetComponent<MeshFilter>().mesh = mesh;
         GetComponent<MeshCollider>().sharedMesh = mesh;
-    }
-
-    public float3 Position()
-    {
-        return transform.position;
     }
 
 
@@ -60,7 +66,7 @@ public class Chunk : MonoBehaviour
     {
         if (worldwide && !InBound(rpos))
         {
-            return ref m_World.GetCell(Position() + rpos);
+            return ref m_World.GetCell(chunkpos + rpos);
         }
 
         return ref LocalCell((int)rpos.x, (int)rpos.y, (int)rpos.z);

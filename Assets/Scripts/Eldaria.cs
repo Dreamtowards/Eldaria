@@ -1,8 +1,24 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
 
+
+class Ethertia
+{
+    public static Dictionary<int, int> m_SomeData = new Dictionary<int, int>();
+
+    static Ethertia()
+    {
+        Log.info("Ethertia StaticNew(); "+m_SomeData.Count); 
+    }
+
+    public static World GetWorld()
+    {
+        return World._Inst;
+    }
+}
 
 class EthertiaTools
 {

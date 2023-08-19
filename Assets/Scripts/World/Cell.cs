@@ -4,9 +4,8 @@ using Unity.Mathematics;
 
 public struct Cell
 {
-
-    public static Cell Nil = new Cell();
-    public static readonly float3 InvalidFP = new(Mathf.Infinity, 0, 0);
+    // Illegal Cell. 
+    public static Cell Nil = new();
 
     // SDF (signed distance field) value.
     // Positives == Inside the volume, Negatives == Outside the volume
@@ -14,7 +13,7 @@ public struct Cell
 
     public int MtlId;
 
-    public float3 FeaturePoint;
+    public float3 FeaturePoint;  // Inf: Cache Invalidated, NaN: Illegal Cell (Access out of range)
     public float3 Normal;
 
     //public Cell()
@@ -34,7 +33,17 @@ public struct Cell
     {
         Value = 0;
         MtlId = 0;
-        FeaturePoint = Mathf.Infinity;
+        FeaturePoint = float.PositiveInfinity;
+    }
+
+    public bool InvalidFP()
+    {
+        return float.IsInfinity(FeaturePoint.x);  // FeaturePoint.x == float.PositiveInfinity
+    }
+
+    public bool IsNil()
+    {
+        return float.IsNaN(Value);
     }
 
 }

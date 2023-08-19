@@ -2,8 +2,6 @@
 
 class Log
 {
-
-
     public static void info(string fmt)
     {
         UnityEngine.Debug.Log(fmt);
@@ -15,5 +13,14 @@ class Log
     public static void Error(string fmt)
     {
         UnityEngine.Debug.LogError(fmt);
+    }
+
+    public static void assert(bool should, string msg = "Assert Error Message")
+    {
+        if (!should)
+        {
+            Log.warn(msg);
+            throw new System.Exception(msg);
+        }
     }
 }

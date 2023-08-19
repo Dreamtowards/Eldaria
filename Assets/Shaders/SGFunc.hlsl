@@ -7,20 +7,12 @@ int MaxIdx(float3 v) {
     return a > b ? (a > c ? 0 : 2) : (b > c ? 1 : 2);
 }
 
-//#pragma require barycentrics
-	//float3 BaryCoord : SV_Barycentrics,
 float mod(float v, float n)
 {
 	float f = v % n;
 	return f < 0 ? f + n : f;
 	//return v-n*floor(v/n);
 }
-//double mod(double v, double n)
-//{
-//	double f = v % n;
-//	return f < 0 ? f + n : f;
-//	//return v-n*floor(v/n);
-//}
 	
 float4 TexTrip(UnityTexture2D tex, float3 p, float MtlTexId, float3 weights, float MtlTexCap) 
 {

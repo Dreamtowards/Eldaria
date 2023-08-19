@@ -17,8 +17,19 @@ public class VertexData
         }
     }
 
-    public List<Vertex> Vertices = new List<Vertex>();
-    public List<int> Indices = new List<int>();
+    public List<Vertex> Vertices;
+    public List<int> Indices;
+
+    public VertexData(int initCap = 0)
+    {
+        Vertices = new List<Vertex>(initCap);
+        Indices = new List<int>(initCap);
+    }
+
+    public static void MakeIndexed(VertexData vtx)
+    {
+        // impl.
+    }
 
     public bool IsIndexed()
     {
@@ -35,25 +46,66 @@ public class VertexData
         Vertices.Add(new Vertex(pos, tex, norm));
     }
 
-    public void Export(Mesh mesh)
+    public void Clear()
+    {
+        Vertices.Clear();
+        Indices.Clear();
+    }
+
+    public class MeshData
+    {
+        public Vector3[] pos;
+        public Vector2[] uv;
+        public Vector3[] norm;
+        public int[] indices;
+
+        public VertexData vtx;
+
+        public Mesh ToMesh()
+        {
+            Mesh mesh = new Mesh();
+            mesh.vertices = pos;
+            mesh.uv = uv;
+            mesh.normals = norm;
+            mesh.triangles = indices;
+            return mesh;
+        }
+    }
+
+    public void Export(MeshData md)
     {
         int vc = VertexCount();
-        Vector3[] pos  = new Vector3[vc];
-        Vector2[] tex  = new Vector2[vc];
-        Vector3[] norm = new Vector3[vc];
+        md.pos  = new Vector3[vc];
+        md.uv  = new Vector2[vc];
+        md.norm = new Vector3[vc];
+        md.vtx = this;  // tmp
 
         for (int i = 0; i < vc; ++i)
         {
             // how by ref?
             Vertex vtx = IsIndexed() ? Vertices[Indices[i]] : Vertices[i];
-            pos[i] = vtx.Position;
-            tex[i] = vtx.TexCoord;
-            norm[i] = vtx.Normal;
+            md.pos[i] = vtx.Position;
+            md.uv[i] = vtx.TexCoord;
+            md.norm[i] = vtx.Normal;
         }
 
-        mesh.vertices = pos;
-        mesh.uv = tex;
-        mesh.normals = norm;
+        md.indices = new int[vc];
+        for (int i = 0; i < vc; ++i)
+        {
+            md.indices[i] = i;
+        }
     }
+
+    //public void Export(Mesh mesh)
+    //{
+    //    Vector3[] pos;
+    //    Vector2[] uv;
+    //    Vector3[] norm;
+    //    Export(out pos, out uv, out norm);
+
+    //    mesh.vertices = pos;
+    //    mesh.uv = uv;
+    //    mesh.normals = norm;
+    //}
 
 }

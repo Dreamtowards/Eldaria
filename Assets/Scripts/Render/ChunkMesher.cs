@@ -2,30 +2,42 @@
 using UnityEngine;
 using UnityEngine.Assertions;
 using Unity.Mathematics;
+using Unity.Jobs;
+using Unity.Burst;
+
+
+//[BurstCompile(CompileSynchronously = true, FloatMode = FloatMode.Fast)]
+public struct MeshingJob : IJobParallelFor
+{
+    public void Execute(int index)
+    {
+        throw new NotImplementedException();
+    }
+}
 
 public class ChunkMesher
 {
 
     public static void GenerateMesh(Chunk chunk, VertexData vts)
     {
-        SN_GenerateMesh(chunk, vts);
+        // SN_GenerateMesh(chunk, vts);
 
-        //for (int rx = 0; rx < 16; ++rx)
-        //{
-        //    for (int ry = 0; ry < 16; ++ry)
-        //    {
-        //        for (int rz = 0; rz < 16; ++rz)
-        //        {
-        //            Vector3 rpos = new Vector3(rx, ry, rz);
-        //            Cell cell = chunk.LocalCell(rx, ry, rz);
+        for (int rx = 0; rx < 16; ++rx)
+        {
+            for (int ry = 0; ry < 16; ++ry)
+            {
+                for (int rz = 0; rz < 16; ++rz)
+                {
+                    Vector3 rpos = new Vector3(rx, ry, rz);
+                    Cell cell = chunk.LocalCell(rx, ry, rz);
 
-        //            if (cell.IsSolid())
-        //            {
-        //                PutCube(vts, rpos, chunk);
-        //            }
-        //        }
-        //    }
-        //}
+                    if (cell.IsSolid())
+                    {
+                        PutCube(vts, rpos, chunk);
+                    }
+                }
+            }
+        }
     }
 
 
@@ -99,7 +111,7 @@ public class ChunkMesher
     ////////////////// Surface Nets, Isosurface //////////////////
 
 
-    static Vector3[] VERT = {
+    public static Vector3[] SN_VERT = {
             new(0, 0, 0),  // 0
             new(0, 0, 1),
             new(0, 1, 0),  // 2
@@ -146,12 +158,12 @@ public class ChunkMesher
                 for (int rz = 0; rz < 16; ++rz)
                 {
                     float3 rp = new(rx, ry, rz);
-                    ref Cell c0 = ref chunk.LocalCell(rx, ry, rz);
+                    Cell c0 = chunk.LocalCell(rx, ry, rz);
 
                     // for 3 axes edges, if sign-changed, connect adjacent 4 cells' vertices
                     for (int axis_i = 0; axis_i < 3; ++axis_i)
                     {
-                        ref Cell c1 = ref chunk.LocalCell(rp + AXES[axis_i], true);
+                        Cell c1 = chunk.LocalCell(rp + AXES[axis_i], true);
 
                         if (SN_SignChanged(c0, c1))
                         {
@@ -161,19 +173,36 @@ public class ChunkMesher
                                 float3 quadp = rp + ADJACENT[axis_i, winded_vi];
 
                                 ref Cell c = ref chunk.LocalCell(quadp, true);
+                                // Cannot skip. or the Triangle is not complete
+                                // if (c.IsNil()) break;  
+
+                                bool badQuad = c.IsNil();
+
+                                float3 _dbg_OrigFp = c.FeaturePoint;
+                                float3 _dbg_EvalFp;
 
                                 //if (c.FeaturePoint.x == Mathf.Infinity)
                                 {
-                                    c.FeaturePoint = SN_FeaturePoint(quadp, chunk);
+                                    c.FeaturePoint = _dbg_EvalFp = SN_FeaturePoint(quadp, chunk);
                                     c.Normal = SN_Grad(quadp, chunk);
+
+                                    if (!float.IsFinite(c.FeaturePoint.x))
+                                    {
+                                        c.FeaturePoint = 0.5f;
+                                        badQuad = true;
+                                    }
                                 }
 
                                 float3 p = quadp + c.FeaturePoint;
+                                if (badQuad)
+                                {
+                                    //p = 0;
+                                }
 
                                 // Select Material of 8 Corners. (Max Density Value)
                                 int MtlId = 0;
                                 float min_dist = float.PositiveInfinity;
-                                foreach (float3 vp in VERT)
+                                foreach (float3 vp in SN_VERT)
                                 {
                                     ref Cell vc = ref chunk.LocalCell(quadp + vp, true);
                                     if (vc.MtlId != 0 && vc.Value > 0 && vc.Value < min_dist)
@@ -182,7 +211,10 @@ public class ChunkMesher
                                         MtlId = vc.MtlId;
                                     }
                                 }
-                                // ASSERT(MtlId);
+#if DEBUG
+                                Log.assert(MtlId != 0, "MeshGen Error: Vertex MtlId == 0.");
+                                Log.assert(float.IsFinite(p.x), "MeshGen Error: Non-Finite Vertex Value.");
+#endif
 
                                 vts.AddVertex(p, new(MtlId, -1), -c.Normal);
                             }
@@ -212,32 +244,36 @@ public class ChunkMesher
 
     // Evaluate FeaturePoint
     // returns cell-local point.
-    static Vector3 SN_FeaturePoint(float3 rp, Chunk chunk)
+    static float3 SN_FeaturePoint(float3 rp, Chunk chunk)
     {
         int signchanges = 0;
         float3 fp_sum = new(0,0,0);
 
         for (int edge_i = 0; edge_i < 12; ++edge_i)
         {
-            float3 v0 = VERT[EDGE[edge_i, 0]];
-            float3 v1 = VERT[EDGE[edge_i, 1]];
+            float3 v0 = SN_VERT[EDGE[edge_i, 0]];
+            float3 v1 = SN_VERT[EDGE[edge_i, 1]];
             ref Cell c0 = ref chunk.LocalCell(rp + v0, true);
             ref Cell c1 = ref chunk.LocalCell(rp + v1, true);
 
             if (SN_SignChanged(c0, c1))
             {
                 float t = Mathf.InverseLerp(c0.Value, c1.Value, 0);
+                if (!float.IsFinite(t)) t = 0;
+
                 float3 p = t * (v1-v0) + v0;
 
+#if DEBUG
+                Log.assert(float.IsFinite(t), "FpEval Error: NonFinite t.");
+#endif
                 fp_sum += p;
                 ++signchanges;
             }
         }
-        if (signchanges == 0)
-        {
-            Log.warn("ERR No SignChange");
-        }
-        Assert.IsTrue(signchanges != 0, "Invalid FeaturePoint, No SignChange.");
+#if DEBUG
+        Log.assert(signchanges != 0, "FpEval Error: No SignChange.");
+        Log.assert(float.IsFinite(fp_sum.x), "FpEval Error: Non-Finite Fp Value.");
+#endif
         return fp_sum / signchanges;
     }
 }

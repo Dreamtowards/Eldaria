@@ -11,7 +11,7 @@ class BenchmarkTimer : IDisposable
 
     private string m_EndMsg;
 
-    public BenchmarkTimer(string msg = "in {0}ms.\n")
+    public BenchmarkTimer(string msg = null)  // "in {0}ms.\n"
     {
         m_EndMsg = msg;
 
@@ -46,4 +46,6 @@ class BenchmarkTimer : IDisposable
 
         return elapsed;
     }
+
+    public TimeSpan Elapsed {  get { return m_Stopwatch.Elapsed; } }
 }
