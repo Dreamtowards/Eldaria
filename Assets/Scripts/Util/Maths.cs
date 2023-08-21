@@ -17,8 +17,9 @@ public class Maths
 
     public static float Floor(float v, float n)
     {
-        float f = (int)(v / n) * n;
-        return v < 0 ? f - n : f;
+        return Mathf.Floor(v / n) * n;
+        //float f = (int)(v / n) * n;
+        //return v < 0 ? f - n : f;
     }
 
     // VectorUtil

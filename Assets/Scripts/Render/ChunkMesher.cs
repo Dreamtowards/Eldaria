@@ -20,20 +20,25 @@ public class ChunkMesher
 
     public static void GenerateMesh(Chunk chunk, VertexData vts)
     {
-        // SN_GenerateMesh(chunk, vts);
-
-        for (int rx = 0; rx < 16; ++rx)
+        if (!Ethertia.GetWorld().m_DbgBlockyMesh)
         {
-            for (int ry = 0; ry < 16; ++ry)
+            SN_GenerateMesh(chunk, vts);
+        }
+        else
+        {
+            for (int rx = 0; rx < 16; ++rx)
             {
-                for (int rz = 0; rz < 16; ++rz)
+                for (int ry = 0; ry < 16; ++ry)
                 {
-                    Vector3 rpos = new Vector3(rx, ry, rz);
-                    Cell cell = chunk.LocalCell(rx, ry, rz);
-
-                    if (cell.IsSolid())
+                    for (int rz = 0; rz < 16; ++rz)
                     {
-                        PutCube(vts, rpos, chunk);
+                        float3 rpos = new(rx, ry, rz);
+                        Cell cell = chunk.LocalCell(rpos);
+
+                        if (cell.IsSolid())
+                        {
+                            PutCube(vts, rpos, chunk);
+                        }
                     }
                 }
             }
@@ -214,6 +219,11 @@ public class ChunkMesher
 #if DEBUG
                                 Log.assert(MtlId != 0, "MeshGen Error: Vertex MtlId == 0.");
                                 Log.assert(float.IsFinite(p.x), "MeshGen Error: Non-Finite Vertex Value.");
+
+                                if (!float.IsFinite(p.x) || !float.IsFinite(p.y) || !float.IsFinite(p.z))
+                                {
+                                    p = new(0, -99, 0);
+                                }
 #endif
 
                                 vts.AddVertex(p, new(MtlId, -1), -c.Normal);

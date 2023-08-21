@@ -7,6 +7,7 @@ using UnityEngine;
 public class DbgGridView : MonoBehaviour
 {
     public bool m_DbgDrawViewerChunkBound = false;
+    public bool m_DbgRepositionToCursor = false;
 
     // Start is called before the first frame update
     void Start()
@@ -17,7 +18,19 @@ public class DbgGridView : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (m_DbgRepositionToCursor)
+        {
+            //m_DbgRepositionToCursor = false;
+
+            Camera camera = SceneView.currentDrawingSceneView.camera;
+            Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit))
+            {
+                Transform objectHit = hit.transform;
+                transform.position = objectHit.position;
+            }
+        }
     }
 
     void OnDrawGizmos()
@@ -49,8 +62,8 @@ public class DbgGridView : MonoBehaviour
 
         if (m_DbgDrawViewerChunkBound)
         {
-            Gizmos.color = Color.gray;
-            Gizmos.DrawWireCube((float3)Chunk.ChunkPos(base_p) + 8.0f,
+            Gizmos.color = Color.gray * 0.5f;
+            Gizmos.DrawCube((float3)Chunk.ChunkPos(base_p) + 8.0f,
                                 Vector3.one * 16.0f);
         }
     }

@@ -1148,7 +1148,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ChunkPrototype: {fileID: 4359580951724453669, guid: 6f2d6b2c9b4c441db89c5673610b1808, type: 3}
-  m_ViewDistance: 2
+  m_ViewDistance: {x: 4, y: 2}
   m_DayTime: 0
   m_Seed: 0
   m_WorldName: Overworld
@@ -1160,7 +1160,8 @@ MonoBehaviour:
 
     ChunksMeshGen: 0
 
-'
+    VertexData
+    Pool N: 0'
   m_LoadChunks: 1
   m_ChunkGenMaxConcurrent: 10
   m_MeshGenMaxConcurrent: 10
@@ -2022,7 +2023,7 @@ MonoBehaviour:
     m_SingletonActionBindings:
     - m_Name: 
       m_Id: cb1a4088-3418-43f7-aa5d-abaf3143bfd5
-      m_Path: <Pointer>/delta
+      m_Path: <Mouse>/delta
       m_Interactions: 
       m_Processors: 
       m_Groups: 
@@ -2032,7 +2033,7 @@ MonoBehaviour:
       m_Id: 03325ff5-9f51-4b8a-88b4-f39c643f49e1
       m_Path: <Gamepad>/rightStick
       m_Interactions: 
-      m_Processors: Scale(factor=2)
+      m_Processors: Scale(factor=5)
       m_Groups: 
       m_Action: Action Look
       m_Flags: 0

@@ -146,8 +146,8 @@ public class World : MonoBehaviour
 
     public Chunk m_ChunkPrototype; 
 
-    [Range(0, 16)]
-    public int m_ViewDistance = 2;
+    //[Range(0, 16)]
+    public Vector2 m_ViewDistance = new Vector2(4, 2);
 
     [Header("WorldInfo")]
 
@@ -163,8 +163,10 @@ public class World : MonoBehaviour
     public bool m_DbgDrawChunkBound = true;
     public string m_DbgWorldInfoStr = "";
 
-    public bool m_LoadChunks = true;
+    public bool m_DbgLoadUnloadChunks = true;
+    public bool m_DbgMakeAllChunksDirty = false;
 
+    public bool m_DbgBlockyMesh = false;
 
     void Start()
     {
@@ -209,8 +211,15 @@ public class World : MonoBehaviour
     {
         float DayLengthSec = 60 * 1;
         m_DayTime += Time.deltaTime / DayLengthSec;
+
+        if (m_DbgMakeAllChunksDirty)
+        {
+            foreach (Chunk chunk in m_Chunks.Values) { 
+                chunk.m_Dirty = true;
+            }
+        }
         
-        if (m_LoadChunks)
+        if (m_DbgLoadUnloadChunks)
         {
             UpdateChunks_LoadAndUnload(m_ViewDistance, Camera.main.transform.position);
         }
@@ -245,7 +254,7 @@ public class World : MonoBehaviour
         if (m_DbgDrawViewDistanceBound)
         {
             Gizmos.color = Color.red;
-            Gizmos.DrawWireCube(viewerChunkPos + 8.0f, Vector3.one * (m_ViewDistance * 2 + 1) * 16.0f);
+            Gizmos.DrawWireCube(viewerChunkPos + 8.0f, (new float3(m_ViewDistance.x, m_ViewDistance.y, m_ViewDistance.x) * 2.0f + 1.0f) * 16.0f);
         }
         if (m_DbgDrawChunkBound)
         {
@@ -293,19 +302,20 @@ public class World : MonoBehaviour
     private Dictionary<float3, Task<Chunk>> m_LoadingChunks = new Dictionary<float3, Task<Chunk>>();
 
     // 加载和卸载区块，最好做到可以放到多个线程同步执行
-    public void UpdateChunks_LoadAndUnload(int viewDistance, float3 viewPos)
+    public void UpdateChunks_LoadAndUnload(float2 viewDistance, float3 viewPos)
     {
         Stopwatch stopwatch = Stopwatch.StartNew();
 
         float3 viewChunkPos = Chunk.ChunkPos(viewPos);
 
         // Load Chunks
-        int n = viewDistance;
-        for (int dx = -n; dx <= n; ++dx)
+        int nH = (int)viewDistance.x;
+        int nV = (int)viewDistance.y;
+        for (int dx = -nH; dx <= nH; ++dx)
         {
-            for (int dy = -n; dy <= n; ++dy) 
+            for (int dy = -nV; dy <= nV; ++dy) 
             {
-                for (int dz = -n; dz <= n; ++dz)
+                for (int dz = -nH; dz <= nH; ++dz)
                 {
                     float3 chunkpos = new float3(dx * 16, dy * 16, dz * 16) + viewChunkPos;
 
@@ -357,14 +367,15 @@ public class World : MonoBehaviour
         }
 
         // Unload Chunks
-        int lim = viewDistance * 16;
+        int limH = (int)viewDistance.x * 16;
+        int limV = (int)viewDistance.y * 16;
         List<Chunk> unloadchunks = new List<Chunk>();
         foreach (Chunk chunk in m_Chunks.Values)
         {
             float3 p = chunk.chunkpos;
-            if (Mathf.Abs(p.x-viewChunkPos.x) > lim ||
-                Mathf.Abs(p.y-viewChunkPos.y) > lim || 
-                Mathf.Abs(p.z-viewChunkPos.z) > lim) //Vector3.Distance(chunk.Position() + new Vector3(8, 8, 8), viewPos) > viewDistance * 30)
+            if (Mathf.Abs(p.x-viewChunkPos.x) > limH ||
+                Mathf.Abs(p.y-viewChunkPos.y) > limV || 
+                Mathf.Abs(p.z-viewChunkPos.z) > limH) //Vector3.Distance(chunk.Position() + new Vector3(8, 8, 8), viewPos) > viewDistance * 30)
             {
                 unloadchunks.Add(chunk);
 
@@ -407,11 +418,8 @@ public class World : MonoBehaviour
                 chunk.m_Dirty = false;  // m_MeshStat = MESHING;
 
 
-
-                //if (g_Pool_VertexData.Count == 0)
-                //    g_Pool_VertexData.AddLast(new VertexData(2048));
-                VertexData vtx = g_Pool_VertexData.Get();
-                //g_Pool_VertexData.RemoveLast();
+                VertexData vtx = //new VertexData(1024);
+                g_Pool_VertexData.Get();
                 vtx.Clear();
 
                 VertexData.MeshData meshData = new VertexData.MeshData();
@@ -450,14 +458,14 @@ public class World : MonoBehaviour
             Log.warn($"{numJobsScheduled} MeshGen Tasks Scheduled.");
 
 
-        double timerProcessMeshAssign = 0;
+        //double timerProcessMeshAssign = 0;
 
         List<TaskHandle> completedTasks = new List<TaskHandle>();
         foreach (TaskHandle handle in m_MeshGenTasks)
         {
             if (handle.task.IsCompleted)
             {
-                BenchmarkTimer tm = new BenchmarkTimer();
+                //BenchmarkTimer tm = new BenchmarkTimer();
 
                 Mesh mesh = handle.result.ToMesh();
 
@@ -469,8 +477,8 @@ public class World : MonoBehaviour
                     chunk.UpdateMesh(mesh);
                 }
 
-                tm.Stop();
-                timerProcessMeshAssign += tm.Elapsed.TotalMilliseconds;
+                //tm.Stop();
+                //timerProcessMeshAssign += tm.Elapsed.TotalMilliseconds;
                 //Log.info("Chunk Assign Mesh, VertexCount: " + mesh.vertexCount + " used " + tm.Elapsed.TotalMilliseconds);
 
                 // Restore to Pool
@@ -478,11 +486,11 @@ public class World : MonoBehaviour
 
                 completedTasks.Add(handle);
 
-                if (timerProcessMeshAssign > 2.0)
-                {
-                    Log.warn("!!!Mesh Complete Assign Abort, OutOfTimeLimit of 2ms, ="+ timerProcessMeshAssign);
-                    break;
-                }
+                //if (timerProcessMeshAssign > 2.0)
+                //{
+                //    Log.warn("!!!Mesh Complete Assign Abort, OutOfTimeLimit of 2ms, ="+ timerProcessMeshAssign);
+                //    break;
+                //}
             }
         }
         foreach (var taskHandle in completedTasks)
