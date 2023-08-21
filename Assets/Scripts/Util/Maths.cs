@@ -49,4 +49,9 @@ public class Maths
         }
         return seq;
     }
+
+    public static bool IsFinite(float3 v)
+    {
+        return float.IsFinite(v.x) && float.IsFinite(v.y) && float.IsFinite(v.z);
+    }
 }

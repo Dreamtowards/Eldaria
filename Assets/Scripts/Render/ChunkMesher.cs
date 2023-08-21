@@ -170,6 +170,11 @@ public class ChunkMesher
                     {
                         Cell c1 = chunk.LocalCell(rp + AXES[axis_i], true);
 
+                        // Skip the face constructing with a Nil Cell. since the FeaturePoint and Normal(SDF Grad) cannot be evaluated.
+                        // ?but Outside should be Enclosed? or the Shadow Casting will be a problem. if a Ceil in TopNil
+                        if (c1.IsNil())
+                            continue;  
+
                         if (SN_SignChanged(c0, c1))
                         {
                             for (int quadv_i = 0; quadv_i < 6; ++quadv_i)
@@ -178,31 +183,37 @@ public class ChunkMesher
                                 float3 quadp = rp + ADJACENT[axis_i, winded_vi];
 
                                 ref Cell c = ref chunk.LocalCell(quadp, true);
-                                // Cannot skip. or the Triangle is not complete
-                                // if (c.IsNil()) break;  
 
                                 bool badQuad = c.IsNil();
-
-                                float3 _dbg_OrigFp = c.FeaturePoint;
-                                float3 _dbg_EvalFp;
+                                //if (badQuad)
+                                //{
+                                //    vts.RemoveVertex((int)Maths.Floor(vts.VertexCount(), 6), quadv_i);
+                                //    break;
+                                //}
 
                                 //if (c.FeaturePoint.x == Mathf.Infinity)
                                 {
-                                    c.FeaturePoint = _dbg_EvalFp = SN_FeaturePoint(quadp, chunk);
-                                    c.Normal = SN_Grad(quadp, chunk);
+                                    c.FeaturePoint = SN_FeaturePoint(quadp, chunk);
+                                    c.Normal = -SN_Grad(quadp, chunk);  // Need Neg. since its not SDF but DensityField.
 
-                                    if (!float.IsFinite(c.FeaturePoint.x))
+                                    if (!Maths.IsFinite(c.FeaturePoint))
                                     {
-                                        c.FeaturePoint = 0.5f;
+                                        c.FeaturePoint = new(0, -99, 0); ;
                                         badQuad = true;
                                     }
+                                    if (!Maths.IsFinite(c.Normal) || math.lengthsq(c.Normal) < 0.1f)
+                                    {
+                                        c.Normal = new(0, 1, 0);
+                                    }
+                                }
+                                if (badQuad)
+                                {
+                                    vts.RemoveVertex((int)Maths.Floor(vts.VertexCount(), 6), quadv_i);
+                                    break;
                                 }
 
                                 float3 p = quadp + c.FeaturePoint;
-                                if (badQuad)
-                                {
-                                    //p = 0;
-                                }
+
 
                                 // Select Material of 8 Corners. (Max Density Value)
                                 int MtlId = 0;
@@ -218,15 +229,15 @@ public class ChunkMesher
                                 }
 #if DEBUG
                                 Log.assert(MtlId != 0, "MeshGen Error: Vertex MtlId == 0.");
-                                Log.assert(float.IsFinite(p.x), "MeshGen Error: Non-Finite Vertex Value.");
+                                Log.assert(Maths.IsFinite(p), () => $"MeshGen Error: Non-Finite Vertex Position Value. {p}");
 
-                                if (!float.IsFinite(p.x) || !float.IsFinite(p.y) || !float.IsFinite(p.z))
-                                {
-                                    p = new(0, -99, 0);
-                                }
+                                float3 n = c.Normal;
+                                Log.assert(Maths.IsFinite(n), () => $"MeshGen Error: Non-Finite Vertex Normal Value. {n}");
+                                Log.assert(Mathf.Abs(math.lengthsq(n) - 1.0f) < 0.2f, () => $"MeshGen Error: Vertex Normal LengthSq != 1.0. {n}");
 #endif
 
-                                vts.AddVertex(p, new(MtlId, -1), -c.Normal);
+
+                                vts.AddVertex(p, new(MtlId, -1), c.Normal);
                             }
                         }
                     }
@@ -242,7 +253,8 @@ public class ChunkMesher
 
     // Evaluate Normal of a Cell FeaturePoint
     // via Approxiate Differental Gradient  
-    static Vector3 SN_Grad(float3 rp, Chunk chunk)
+    // WARN: may produce NaN Normal Value if the Cell's value is NaN (Nil Cell in the Context)
+    static float3 SN_Grad(float3 rp, Chunk chunk)
     {
         float E = 1.0f;  // epsilon
         float denom = 1.0f / (2.0f * E);
@@ -269,13 +281,10 @@ public class ChunkMesher
             if (SN_SignChanged(c0, c1))
             {
                 float t = Mathf.InverseLerp(c0.Value, c1.Value, 0);
-                if (!float.IsFinite(t)) t = 0;
+                if (!float.IsFinite(t)) t = 0;  // t maybe NaN if accessing a Nil Cell.
 
                 float3 p = t * (v1-v0) + v0;
 
-#if DEBUG
-                Log.assert(float.IsFinite(t), "FpEval Error: NonFinite t.");
-#endif
                 fp_sum += p;
                 ++signchanges;
             }

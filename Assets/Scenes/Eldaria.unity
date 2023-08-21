@@ -1148,7 +1148,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ChunkPrototype: {fileID: 4359580951724453669, guid: 6f2d6b2c9b4c441db89c5673610b1808, type: 3}
-  m_ViewDistance: {x: 4, y: 2}
+  m_ViewDistance: {x: 2, y: 1}
   m_DayTime: 0
   m_Seed: 0
   m_WorldName: Overworld
@@ -1162,7 +1162,9 @@ MonoBehaviour:
 
     VertexData
     Pool N: 0'
-  m_LoadChunks: 1
+  m_DbgLoadUnloadChunks: 1
+  m_DbgMakeAllChunksDirty: 0
+  m_DbgBlockyMesh: 1
   m_ChunkGenMaxConcurrent: 10
   m_MeshGenMaxConcurrent: 10
 --- !u!4 &873513984
@@ -1179,7 +1181,7 @@ Transform:
   m_Children:
   - {fileID: 705507995}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &963194225
 GameObject:
@@ -1748,6 +1750,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_DbgDrawViewerChunkBound: 0
+  m_DbgRepositionToCursor: 0
 --- !u!4 &1317419896
 Transform:
   m_ObjectHideFlags: 0
@@ -1761,7 +1764,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1376818789
 GameObject:
@@ -1916,7 +1919,7 @@ Transform:
   - {fileID: 304009358}
   - {fileID: 1985484184}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1490219554
 GameObject:

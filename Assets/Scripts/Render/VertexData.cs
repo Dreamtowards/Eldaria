@@ -46,6 +46,11 @@ public class VertexData
         Vertices.Add(new Vertex(pos, tex, norm));
     }
 
+    public void RemoveVertex(int index, int count = 1)
+    {
+        Vertices.RemoveRange(index, count);
+    }
+
     public void Clear()
     {
         Vertices.Clear();

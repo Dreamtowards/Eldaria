@@ -23,9 +23,10 @@ float4 TexTrip(UnityTexture2D tex, float3 p, float MtlTexId, float3 weights, flo
 	float2 uvY = float2(mod(p.x * MtlTexSizeX, MtlTexSizeX-E*2) + MtlTexPosX+E, p.z);
 	float2 uvZ = float2(mod(p.x * MtlTexSizeX, MtlTexSizeX-E*2) + MtlTexPosX+E, p.y);
 
-    return //SAMPLE_TEXTURE2D(tex, TexSampleState, uvX) * weights.x +
-           tex2D(tex, uvY) * weights.y;// +
-           //SAMPLE_TEXTURE2D(tex, TexSampleState, uvZ) * weights.z;
+	//SAMPLE_TEXTURE2D(tex, TexSampleState, uvX) * weights.x +
+    return tex2D(tex, uvX) * weights.x +
+           tex2D(tex, uvY) * weights.y +
+           tex2D(tex, uvZ) * weights.z;
 }
 
 void MtlBlend_float(

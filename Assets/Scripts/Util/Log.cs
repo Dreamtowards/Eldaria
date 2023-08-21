@@ -1,5 +1,7 @@
 
 
+using System;
+
 class Log
 {
     public static void info(string fmt)
@@ -20,7 +22,15 @@ class Log
         if (!should)
         {
             Log.warn(msg);
-            throw new System.Exception(msg);
+            //throw new System.Exception(msg);
+        }
+    }
+    public static void assert(bool should, Func<string> str_fn)
+    {
+        if (!should)
+        {
+            Log.warn(str_fn());
+            //throw new System.Exception(msg);
         }
     }
 }
