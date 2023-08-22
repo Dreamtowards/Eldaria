@@ -37,7 +37,7 @@ public class ChunkMesher
 
                         if (cell.IsSolid())
                         {
-                            PutCube(vts, rpos, chunk);
+                            PutCube(vts, rpos, chunk, cell);
                         }
                     }
                 }
@@ -85,7 +85,7 @@ public class ChunkMesher
             0, 0,-1, 0, 0,-1, 0, 0,-1, 0, 0,-1, 0, 0,-1, 0, 0,-1,
             0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1
     };
-    static void PutCube(VertexData vdat, float3 rpos, Chunk chunk) 
+    static void PutCube(VertexData vdat, float3 rpos, Chunk chunk, Cell c) 
     {
         for (int face_i = 0; face_i < 6; ++face_i)
         {
@@ -97,7 +97,7 @@ public class ChunkMesher
                 for (int vert_i = 0; vert_i < 6; ++vert_i)
                 {
                     vdat.AddVertex(Maths.vec3(CUBE_POS, face_i * 18 + vert_i * 3) + rpos,
-                                   Maths.vec2(CUBE_UV,  face_i * 12 + vert_i * 2),
+                                   new(c.Mtl.Id, 0), //Maths.vec2(CUBE_UV,  face_i * 12 + vert_i * 2),
                                    Maths.vec3(CUBE_NORM,face_i * 18 + vert_i * 3));
                 }
             }
@@ -216,19 +216,19 @@ public class ChunkMesher
 
 
                                 // Select Material of 8 Corners. (Max Density Value)
-                                int MtlId = 0;
+                                Material mtl = null;
                                 float min_dist = float.PositiveInfinity;
                                 foreach (float3 vp in SN_VERT)
                                 {
                                     ref Cell vc = ref chunk.LocalCell(quadp + vp, true);
-                                    if (vc.MtlId != 0 && vc.Value > 0 && vc.Value < min_dist)
+                                    if (vc.Mtl != null && vc.Value > 0 && vc.Value < min_dist)
                                     {
                                         min_dist = vc.Value;
-                                        MtlId = vc.MtlId;
+                                        mtl = vc.Mtl;
                                     }
                                 }
 #if DEBUG
-                                Log.assert(MtlId != 0, "MeshGen Error: Vertex MtlId == 0.");
+                                Log.assert(mtl != null, "MeshGen Error: Vertex MtlId == 0.");
                                 Log.assert(Maths.IsFinite(p), () => $"MeshGen Error: Non-Finite Vertex Position Value. {p}");
 
                                 float3 n = c.Normal;
@@ -236,8 +236,7 @@ public class ChunkMesher
                                 Log.assert(Mathf.Abs(math.lengthsq(n) - 1.0f) < 0.2f, () => $"MeshGen Error: Vertex Normal LengthSq != 1.0. {n}");
 #endif
 
-
-                                vts.AddVertex(p, new(MtlId, -1), c.Normal);
+                                vts.AddVertex(p, new(mtl == null ? 0 : mtl.Id, -1), c.Normal);
                             }
                         }
                     }

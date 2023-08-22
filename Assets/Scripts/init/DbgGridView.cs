@@ -70,8 +70,13 @@ public class DbgGridView : MonoBehaviour
         }
         if (m_DbgShowTextNormalValue)
         {
+            string mtl = "nil";
+            if (cell.Mtl != null)
+            {
+                mtl = $"{cell.Mtl.RegistryId} {cell.Mtl.Id}";
+            }
             Handles.Label(Maths.IsFinite(cell.FeaturePoint) ? base_p + cell.FeaturePoint + 0.1f : base_p + 0.5f,
-                "\nP: " + cell.FeaturePoint.ToString() + "\nN: " + cell.Normal.ToString());
+                $"\nP: {cell.FeaturePoint}\nN: {cell.Normal}\nMtl: {mtl}");
         }
 
         foreach (float3 v in ChunkMesher.SN_VERT)

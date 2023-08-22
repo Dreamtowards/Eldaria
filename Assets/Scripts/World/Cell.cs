@@ -11,7 +11,8 @@ public struct Cell
     // Positives == Inside the volume, Negatives == Outside the volume
     public float Value;
 
-    public int MtlId;
+    // a pointer to a Material Prototype. null=AIR.
+    public Material Mtl;
 
     public float3 FeaturePoint;  // Inf: Cache Invalidated, NaN: Illegal Cell (Access out of range)
     public float3 Normal;
@@ -32,7 +33,7 @@ public struct Cell
     public void Invalidate()
     {
         Value = 0;
-        MtlId = 0;
+        Mtl = Material.AIR;
         FeaturePoint = float.PositiveInfinity;
     }
 

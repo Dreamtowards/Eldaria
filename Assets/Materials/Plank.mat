@@ -215,9 +215,9 @@ Material:
     - _MtlBlendPowTriplanar: 27
     - _MtlCap: 3.8
     - _MtlHeightmapBlendPow: 0.6
-    - _MtlTexCap: 22
-    - _MtlTexIdOffset: 4
-    - _MtlTexScale: 2
+    - _MtlTexCap: 23
+    - _MtlTexIdOffset: 0
+    - _MtlTexScale: 1.8
     - _MtlTriplanarBlendPow: 6
     - _NumLayersCount: 1
     - _OcclusionStrength: 1

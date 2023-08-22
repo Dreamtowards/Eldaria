@@ -17,7 +17,7 @@ class MaterialTextures
     public static void Load()
     {
         using BenchmarkTimer tm = new();
-        Log.info($"Loading {Material.REGISTRY.Count()} material textures/atlases... (x{TEX_RESOLUTION})");
+        Log.info($"Loading {Material.REGISTRY.Count} material textures/atlases... (x{TEX_RESOLUTION})");
 
         MakeAtlas("diff", TEX_RESOLUTION, "cache_atlas_diff.png");
         MakeAtlas("norm", TEX_RESOLUTION, "cache_atlas_norm.png");
@@ -51,7 +51,7 @@ class MaterialTextures
 
     private static bool LoadResizePut(string id, string texType, Texture2D dstTex, int dstWidth, int dstHeight, int dstX = 0)
     {
-        string path = $"C:/Users/Dreamtowards/Desktop/Eldaria/Assets/assets/materials/{id}/{texType}.png";
+        string path = $"{Application.dataPath}/assets/materials/{id}/{texType}.png";
         if (!File.Exists(path))
             return false;
 
@@ -96,7 +96,7 @@ class MaterialTextures
         using BenchmarkTimer tm = new();
         Log.info($" *{texType} generate new atlas to '{cacheFile}'.");
 
-        int N = Material.REGISTRY.Count();
+        int N = Material.REGISTRY.Count;
 
         Texture2D atlas = new Texture2D(N*PX, PX, TextureFormat.ARGB32, false);
 

@@ -2,17 +2,31 @@
 
 using System.Collections.Generic;
 
-class Material
+public class Material
 {
     public static Registry<Material> REGISTRY = new Registry<Material>();
 
     public string RegistryId;
+
+    // Runtime Id for e.g. Rendering System.
+    public int Id;
+
+    public bool Opaque = true;
 
     public Material(string id)
     {
         this.RegistryId = id;
 
         REGISTRY.Register(id, this);
+    }
+
+    static Material()
+    {
+
+        Material.REGISTRY.BuildNumberIds((mtl, id) => mtl.Id = id);
+        Log.info("Material NumId Built.");
+
+        Log.info($"Registered {REGISTRY.Count} Materials: " + REGISTRY.DbgPrintEntries());
     }
 
 
@@ -46,6 +60,7 @@ class Material
     public static Material LOG_OAK = new Material("log_oak");
     public static Material PLANK = new Material("plank");
 
+    public static Material WATER = new Material("water") { Opaque = false };
 
 
 

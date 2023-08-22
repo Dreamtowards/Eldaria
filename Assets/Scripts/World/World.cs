@@ -165,16 +165,19 @@ public class World : MonoBehaviour
 
     public bool m_DbgLoadUnloadChunks = true;
     public bool m_DbgMakeAllChunksDirty = false;
+    public bool m_DbgMakeAllChunksRepopulate = false;
 
     public bool m_DbgBlockyMesh = false;
+
+    public float m_DbgN_Octaves = 4;
+    public float m_DbgN_FreqInv = 2;
+    public float m_DbgN_FracLat = 2;
+    public float m_DbgN_FracGain = 0.5f;
 
     void Start()
     {
         Log.assert(_Inst == null);
         _Inst = this;
-
-        Ethertia.m_SomeData.Add(1, 2);
-        Log.info("World Starts. "+ this.GetHashCode());
 
         int workThreads, cpThreads;
         ThreadPool.GetMaxThreads(out workThreads, out cpThreads);
@@ -214,8 +217,21 @@ public class World : MonoBehaviour
 
         if (m_DbgMakeAllChunksDirty)
         {
+            m_DbgMakeAllChunksDirty = false;
             foreach (Chunk chunk in m_Chunks.Values) { 
                 chunk.m_Dirty = true;
+            }
+        }
+        if (m_DbgMakeAllChunksRepopulate)
+        {
+            m_DbgMakeAllChunksRepopulate = false;
+            foreach (Chunk chunk in m_Chunks.Values)
+            {
+                Task t = new Task(() =>
+                {
+                    ChunkGenerator.Populate(chunk);
+                });
+                t.Start();
             }
         }
         
@@ -254,7 +270,7 @@ public class World : MonoBehaviour
         if (m_DbgDrawViewDistanceBound)
         {
             Gizmos.color = Color.red;
-            Gizmos.DrawWireCube(viewerChunkPos + 8.0f, (new float3(m_ViewDistance.x, m_ViewDistance.y, m_ViewDistance.x) * 2.0f + 1.0f) * 16.0f);
+            Gizmos.DrawWireCube(viewerChunkPos + 8.0f, (new float3((int)m_ViewDistance.x, (int)m_ViewDistance.y, (int)m_ViewDistance.x) * 2.0f + 1.0f) * 16.0f);
         }
         if (m_DbgDrawChunkBound)
         {
