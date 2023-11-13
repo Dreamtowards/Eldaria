@@ -1,4 +1,4 @@
-using Ethertia;
+﻿using Ethertia;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -118,7 +118,7 @@ namespace Ethertia
                 else if (Input.GetKey(KeyCode.Space) && IsGrounded())
                 {
                     // Jump
-                    disp.y += (m_JumpHeight * -2f * m_Gravity.y);  // sqrt here?
+                    disp += (m_JumpHeight * -2f * m_Gravity);  // sqrt here?
                 }
 
                 // Sprint
@@ -131,23 +131,22 @@ namespace Ethertia
                 m_MoveVelocity += disp;
             }
 
+            // Gravity 和 Move 的velocity分开计算。因为MoveVel需要很大的damping，而GravityVel不需要那么大damping。
 
             // Gravity acceleration.
             if (IsFlying() || IsGrounded())
             {
-                //m_MoveVelocity.y = 0;
                 m_GravityVelocity = Vector3.zero;
             } 
             else
             {
-                m_MoveVelocity.y += m_Gravity.y * Time.deltaTime;
                 m_GravityVelocity += m_Gravity * Time.deltaTime;
             }
 
-            m_CharacterController.Move((m_MoveVelocity) * Time.deltaTime);
+            m_CharacterController.Move((m_MoveVelocity + m_GravityVelocity) * Time.deltaTime);
 
             // Damping
-            m_MoveVelocity *= Mathf.Pow(0.03f, Time.deltaTime);
+            m_MoveVelocity *= Mathf.Pow(0.002f, Time.deltaTime);
         }
     }
 
