@@ -1164,7 +1164,12 @@ MonoBehaviour:
     Pool N: 0'
   m_DbgLoadUnloadChunks: 1
   m_DbgMakeAllChunksDirty: 0
+  m_DbgMakeAllChunksRepopulate: 0
   m_DbgBlockyMesh: 1
+  m_DbgN_Octaves: 6
+  m_DbgN_Freq: 0.02
+  m_DbgN_FracLat: 2.5
+  m_DbgN_FracGain: 0.5
   m_ChunkGenMaxConcurrent: 10
   m_MeshGenMaxConcurrent: 10
 --- !u!4 &873513984
@@ -1181,7 +1186,7 @@ Transform:
   m_Children:
   - {fileID: 705507995}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &963194225
 GameObject:
@@ -1751,6 +1756,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_DbgDrawViewerChunkBound: 0
   m_DbgRepositionToCursor: 0
+  m_DbgShowTextNormalValue: 0
 --- !u!4 &1317419896
 Transform:
   m_ObjectHideFlags: 0
@@ -2105,7 +2111,7 @@ Transform:
   m_Children:
   - {fileID: 963194228}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!143 &1490219561
 CharacterController:
@@ -2501,7 +2507,7 @@ RectTransform:
   - {fileID: 398787876}
   - {fileID: 1526692133}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}

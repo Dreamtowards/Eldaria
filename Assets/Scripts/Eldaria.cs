@@ -4,40 +4,38 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-
-class Ethertia
+namespace Ethertia
 {
-    //public static Dictionary<int, int> m_SomeData = new Dictionary<int, int>();
-
-    //[RuntimeInitializeOnLoadMethod]
-    //static void Init()
-    //{
-    //    Debug.Log("After Scene is loaded and game is running");
-
-    //}
-
-    //static Ethertia()
-    //{
-    //    Log.info("Ethertia StaticNew(); "+m_SomeData.Count); 
-    //}
-
-    public static World GetWorld()
+    class Ethertia
     {
-        return World._Inst;
-    }
-}
+        //public static Dictionary<int, int> m_SomeData = new Dictionary<int, int>();
 
-class EthertiaTools
-{
+        //[RuntimeInitializeOnLoadMethod]
+        //static void Init()
+        //{
+        //    Debug.Log("After Scene is loaded and game is running");
 
-    [MenuItem("Eldaria/Regenerate Material Texture Atlases")]
-    private static void RegenMtlTexAtlas()
-    {
-        //Log.info($"CurrDir: {Directory.GetCurrentDirectory()}, {Application.dataPath}");
+        //}
 
-        MaterialTextures.Load();
+        //static Ethertia()
+        //{
+        //    Log.info("Ethertia StaticNew(); "+m_SomeData.Count); 
+        //}
 
-        //EditorUtility.DisplayDialog("MyTool2", "Do It in C# !", "OK", "");
+        public static World GetWorld()
+        {
+            return World._Inst;
+        }
+
+        [MenuItem("Eldaria/Regenerate Material Texture Atlases")]
+        private static void RegenMtlTexAtlas()
+        {
+            //Log.info($"CurrDir: {Directory.GetCurrentDirectory()}, {Application.dataPath}");
+
+            MaterialTextures.Load();
+
+            //EditorUtility.DisplayDialog("MyTool2", "Do It in C# !", "OK", "");
+        }
     }
 
 }

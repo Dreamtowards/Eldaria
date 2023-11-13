@@ -55,7 +55,7 @@ void MtlBlend_float(
 	//int iax_MaxNorm = MaxIdx(WorldNorm);
 	
     // use Norm AbsVal as weights
-    float3 BlendTrip = pow(abs(WorldNorm), 6.0);
+    float3 BlendTrip = pow(abs(WorldNorm), MtlBlendPowTriplanar);
     BlendTrip /= dot(BlendTrip, 1.0);  // make sure the weights sum up to 1 (divide by sum of x+y+z)
 
 	MtlIds += MtlTexIdOffset;

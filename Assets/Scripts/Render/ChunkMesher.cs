@@ -5,6 +5,9 @@ using Unity.Mathematics;
 using Unity.Jobs;
 using Unity.Burst;
 
+namespace Ethertia
+{
+
 
 //[BurstCompile(CompileSynchronously = true, FloatMode = FloatMode.Fast)]
 public struct MeshingJob : IJobParallelFor
@@ -296,3 +299,5 @@ public class ChunkMesher
     }
 }
 
+
+}

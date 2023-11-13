@@ -2,6 +2,9 @@
 using Unity.Mathematics;
 using UnityEngine;
 
+namespace Ethertia
+{
+
 public class ChunkGenerator
 {
 
@@ -13,7 +16,7 @@ public class ChunkGenerator
 
         World w = Ethertia.GetWorld();
         fn.SetFractalOctaves((int)w.m_DbgN_Octaves);
-        fn.SetFrequency(1/w.m_DbgN_FreqInv);
+        fn.SetFrequency(w.m_DbgN_Freq);
         fn.SetFractalLacunarity(w.m_DbgN_FracLat);
         fn.SetFractalGain(w.m_DbgN_FracGain);
         fn.SetSeed((int)w.m_Seed);
@@ -104,4 +107,6 @@ public class ChunkGenerator
             }
         }
     }
+}
+
 }
